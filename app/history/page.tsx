@@ -4,21 +4,52 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Snowfall from '../components/Snowfall';
-import { getRedeemedPrizes, RedeemedPrize } from '../lib/storage';
-import { prizePool } from '../lib/prizes';
+
+interface HistoryEntry {
+  id: number;
+  day: number;
+  prize_id: number;
+  won_at: string;
+  prize: {
+    id: number;
+    type: 'voucher' | 'challenge';
+    title: string;
+    description: string;
+    emoji: string;
+    color: string;
+  };
+}
+
+interface Stats {
+  total: number;
+  won: number;
+  remaining: number;
+}
 
 export default function HistoryPage() {
-  const [prizes, setPrizes] = useState<RedeemedPrize[]>([]);
-  const [totalPrizes, setTotalPrizes] = useState(0);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [stats, setStats] = useState<Stats>({ total: 0, won: 0, remaining: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const redeemed = getRedeemedPrizes();
-    // Sort by date (most recent first)
-    redeemed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    setPrizes(redeemed);
-    setTotalPrizes(prizePool.length);
-    setLoading(false);
+    const fetchHistory = async () => {
+      try {
+        const response = await fetch('/api/history');
+        const data = await response.json();
+        if (data.history) {
+          setHistory(data.history);
+        }
+        if (data.stats) {
+          setStats(data.stats);
+        }
+      } catch {
+        console.error('Failed to fetch history');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchHistory();
   }, []);
 
   return (
@@ -43,8 +74,11 @@ export default function HistoryPage() {
 
         {/* Prizes grid */}
         {loading ? (
-          <div className="text-center text-white text-xl">Laden...</div>
-        ) : prizes.length === 0 ? (
+          <div className="text-center text-white text-xl">
+            <div className="text-6xl animate-spin mb-4">🎡</div>
+            Laden...
+          </div>
+        ) : history.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -60,9 +94,9 @@ export default function HistoryPage() {
           </motion.div>
         ) : (
           <div className="max-w-4xl mx-auto grid gap-6 md:grid-cols-2">
-            {prizes.map((prize, index) => (
+            {history.map((entry, index) => (
               <motion.div
-                key={`${prize.day}-${prize.prizeId}`}
+                key={entry.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -71,26 +105,26 @@ export default function HistoryPage() {
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                      <span className="text-2xl font-bold text-yellow-800">{prize.day}</span>
+                      <span className="text-2xl font-bold text-yellow-800">{entry.day}</span>
                     </div>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-3xl">{prize.prizeEmoji}</span>
-                      <h3 className="text-xl font-bold text-white">{prize.prizeTitle}</h3>
+                      <span className="text-3xl">{entry.prize.emoji}</span>
+                      <h3 className="text-xl font-bold text-white">{entry.prize.title}</h3>
                     </div>
-                    <p className="text-white/80 text-sm mb-3">{prize.prizeDescription}</p>
+                    <p className="text-white/80 text-sm mb-3">{entry.prize.description}</p>
                     <div className="flex items-center gap-2">
                       <span
                         className="inline-block px-3 py-1 rounded-full text-xs font-bold text-white"
                         style={{
-                          backgroundColor: prize.prizeType === 'voucher' ? '#10B981' : '#8B5CF6',
+                          backgroundColor: entry.prize.type === 'voucher' ? '#10B981' : '#8B5CF6',
                         }}
                       >
-                        {prize.prizeType === 'voucher' ? '🎟️ Gutschein' : '🎯 Challenge'}
+                        {entry.prize.type === 'voucher' ? '🎟️ Gutschein' : '🎯 Challenge'}
                       </span>
                       <span className="text-white/50 text-xs">
-                        {new Date(prize.date).toLocaleDateString('de-DE', {
+                        {new Date(entry.won_at).toLocaleDateString('de-DE', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric',
@@ -105,7 +139,7 @@ export default function HistoryPage() {
         )}
 
         {/* Stats */}
-        {prizes.length > 0 && (
+        {history.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -114,23 +148,23 @@ export default function HistoryPage() {
           >
             <div className="flex flex-wrap justify-center gap-8 text-center">
               <div>
-                <div className="text-4xl font-bold text-yellow-400">{prizes.length}</div>
+                <div className="text-4xl font-bold text-yellow-400">{stats.won}</div>
                 <div className="text-white/70 text-sm">Gewonnen</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-green-400">
-                  {prizes.filter((p) => p.prizeType === 'voucher').length}
+                  {history.filter((e) => e.prize.type === 'voucher').length}
                 </div>
                 <div className="text-white/70 text-sm">Gutscheine</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-purple-400">
-                  {prizes.filter((p) => p.prizeType === 'challenge').length}
+                  {history.filter((e) => e.prize.type === 'challenge').length}
                 </div>
                 <div className="text-white/70 text-sm">Challenges</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-red-400">{totalPrizes - prizes.length}</div>
+                <div className="text-4xl font-bold text-red-400">{stats.remaining}</div>
                 <div className="text-white/70 text-sm">Im Pool übrig</div>
               </div>
             </div>

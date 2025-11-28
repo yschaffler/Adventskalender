@@ -7,8 +7,7 @@ import Snowfall from '../../components/Snowfall';
 import WelcomeAnimation from '../../components/WelcomeAnimation';
 import SpinningWheel from '../../components/SpinningWheel';
 import PrizeReveal from '../../components/PrizeReveal';
-import { getPrizeById, Prize } from '../../lib/prizes';
-import { canRedeemToday, redeemPrize, isAlreadyRedeemed, getRedeemedPrizeForDay, selectRandomPrize } from '../../lib/storage';
+import { Prize } from '../../lib/prizes';
 import Link from 'next/link';
 
 export default function DayPage() {
@@ -26,6 +25,7 @@ export default function DayPage() {
   const [prize, setPrize] = useState<Prize | null>(null);
   const [alreadyRedeemed, setAlreadyRedeemed] = useState(false);
   const [redeemedPrize, setRedeemedPrize] = useState<Prize | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Validate day
@@ -34,69 +34,68 @@ export default function DayPage() {
       return;
     }
 
-    // In demo mode, skip all checks and select a random prize
+    // In demo mode, skip date checks
     if (isDemo) {
       setCanPlay(true);
-      const randomPrize = selectRandomPrize();
-      if (randomPrize) {
-        setPrize(randomPrize);
-      }
+      setLoading(false);
       return;
     }
 
-    // Check if already redeemed and get the prize
-    if (isAlreadyRedeemed(dayId)) {
-      setAlreadyRedeemed(true);
-      const redeemed = getRedeemedPrizeForDay(dayId);
-      if (redeemed) {
-        const originalPrize = getPrizeById(redeemed.prizeId);
-        if (originalPrize) {
-          setRedeemedPrize(originalPrize);
+    // Check with API if we can play
+    const checkCanPlay = async () => {
+      try {
+        const response = await fetch(`/api/spin?day=${dayId}`);
+        const data = await response.json();
+        
+        if (data.canPlay) {
+          setCanPlay(true);
+        } else {
+          setCanPlay(false);
+          setErrorMessage(data.reason || 'Nicht verfügbar');
+          
+          if (data.alreadyPlayed && data.prize) {
+            setAlreadyRedeemed(true);
+            setRedeemedPrize(data.prize);
+          }
         }
+      } catch {
+        setErrorMessage('Fehler beim Laden');
+        setCanPlay(false);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    // Check if can redeem
-    const { canRedeem, reason } = canRedeemToday(dayId);
-    setCanPlay(canRedeem);
-    if (!canRedeem && reason) {
-      setErrorMessage(reason);
-    }
-
-    // If can redeem, select a random prize
-    if (canRedeem) {
-      const randomPrize = selectRandomPrize();
-      if (randomPrize) {
-        setPrize(randomPrize);
-      }
-    }
+    checkCanPlay();
   }, [dayId, router, isDemo]);
 
   const handleWelcomeComplete = useCallback(() => {
     setShowWelcome(false);
   }, []);
 
-  const handleSpinComplete = useCallback(() => {
-    if (prize) {
-      // Save to storage (skip in demo mode)
-      if (!isDemo) {
-        redeemPrize({
-          day: dayId,
-          date: new Date().toISOString(),
-          prizeId: prize.id,
-          prizeTitle: prize.title,
-          prizeDescription: prize.description,
-          prizeType: prize.type,
-          prizeEmoji: prize.emoji,
-        });
-      }
+  const handleSpinComplete = useCallback(async () => {
+    try {
+      const response = await fetch('/api/spin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ day: dayId, demo: isDemo }),
+      });
       
-      // Show prize
-      setTimeout(() => {
-        setShowPrize(true);
-      }, 500);
+      const data = await response.json();
+      
+      if (data.prize) {
+        setPrize(data.prize);
+        setTimeout(() => {
+          setShowPrize(true);
+        }, 500);
+      } else if (data.error) {
+        setErrorMessage(data.error);
+        setCanPlay(false);
+      }
+    } catch {
+      setErrorMessage('Fehler beim Drehen');
     }
-  }, [prize, dayId, isDemo]);
+  }, [dayId, isDemo]);
 
   // Invalid day
   if (isNaN(dayId) || dayId < 1 || dayId > 24) {
@@ -123,8 +122,20 @@ export default function DayPage() {
             <p className="text-white/80 text-lg">Adventskalender für Mama</p>
           </motion.div>
 
+          {/* Loading */}
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center"
+            >
+              <div className="text-6xl animate-spin">🎡</div>
+              <p className="text-white mt-4">Laden...</p>
+            </motion.div>
+          )}
+
           {/* Already redeemed - show the prize */}
-          {alreadyRedeemed && redeemedPrize && (
+          {!loading && alreadyRedeemed && redeemedPrize && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -149,7 +160,7 @@ export default function DayPage() {
           )}
 
           {/* Cannot play - show error */}
-          {!alreadyRedeemed && canPlay === false && (
+          {!loading && !alreadyRedeemed && canPlay === false && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -163,7 +174,7 @@ export default function DayPage() {
           )}
 
           {/* Can play - show wheel */}
-          {!alreadyRedeemed && canPlay === true && (
+          {!loading && !alreadyRedeemed && canPlay === true && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

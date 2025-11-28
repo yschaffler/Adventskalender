@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+
+# Database files (will be managed by Docker volume)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Development files
+.git
+.gitignore
+README.md
+*.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env*
+!.env.example
+
+# Test files
+*.test.*
+__tests__
+coverage
+
+# Logs
+*.log
+npm-debug.log*

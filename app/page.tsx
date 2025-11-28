@@ -4,16 +4,24 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Snowfall from './components/Snowfall';
 import { useEffect, useState } from 'react';
-import { getRedeemedPrizes } from './lib/storage';
-import { prizePool } from './lib/prizes';
 
 export default function Home() {
-  const [redeemedCount, setRedeemedCount] = useState(0);
-  const [totalPrizes, setTotalPrizes] = useState(0);
+  const [stats, setStats] = useState({ won: 0, remaining: 0, total: 0 });
 
   useEffect(() => {
-    setRedeemedCount(getRedeemedPrizes().length);
-    setTotalPrizes(prizePool.length);
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/prizes');
+        const data = await response.json();
+        if (data.stats) {
+          setStats(data.stats);
+        }
+      } catch {
+        console.error('Failed to fetch stats');
+      }
+    };
+    
+    fetchStats();
   }, []);
 
   return (
@@ -87,11 +95,11 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-6 text-center">
             <div>
-              <div className="text-3xl font-bold text-yellow-400">{redeemedCount}</div>
+              <div className="text-3xl font-bold text-yellow-400">{stats.won}</div>
               <div className="text-white/70 text-sm">Gewonnen</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-400">{totalPrizes - redeemedCount}</div>
+              <div className="text-3xl font-bold text-green-400">{stats.remaining}</div>
               <div className="text-white/70 text-sm">Im Pool übrig</div>
             </div>
           </div>
