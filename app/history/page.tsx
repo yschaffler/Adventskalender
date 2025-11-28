@@ -5,16 +5,19 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Snowfall from '../components/Snowfall';
 import { getRedeemedPrizes, RedeemedPrize } from '../lib/storage';
+import { prizePool } from '../lib/prizes';
 
 export default function HistoryPage() {
   const [prizes, setPrizes] = useState<RedeemedPrize[]>([]);
+  const [totalPrizes, setTotalPrizes] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const redeemed = getRedeemedPrizes();
-    // Sort by day
-    redeemed.sort((a, b) => a.day - b.day);
+    // Sort by date (most recent first)
+    redeemed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     setPrizes(redeemed);
+    setTotalPrizes(prizePool.length);
     setLoading(false);
   }, []);
 
@@ -35,7 +38,7 @@ export default function HistoryPage() {
           >
             📜 Deine Gewinne 📜
           </h1>
-          <p className="text-white/80 text-lg">Alle eingelösten Gutscheine & Challenges</p>
+          <p className="text-white/80 text-lg">Alle gewonnenen Gutscheine & Challenges</p>
         </motion.div>
 
         {/* Prizes grid */}
@@ -49,9 +52,9 @@ export default function HistoryPage() {
           >
             <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 max-w-md mx-auto border border-white/20">
               <div className="text-6xl mb-6">🎄</div>
-              <p className="text-white text-xl mb-4">Noch keine Gewinne eingelöst!</p>
+              <p className="text-white text-xl mb-4">Noch keine Gewinne!</p>
               <p className="text-white/70">
-                Scanne einen QR-Code aus deinem Adventskalender, um dein erstes Türchen zu öffnen.
+                Scanne einen QR-Code aus deinem Adventskalender, um am Glücksrad zu drehen.
               </p>
             </div>
           </motion.div>
@@ -59,7 +62,7 @@ export default function HistoryPage() {
           <div className="max-w-4xl mx-auto grid gap-6 md:grid-cols-2">
             {prizes.map((prize, index) => (
               <motion.div
-                key={prize.day}
+                key={`${prize.day}-${prize.prizeId}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -112,7 +115,7 @@ export default function HistoryPage() {
             <div className="flex flex-wrap justify-center gap-8 text-center">
               <div>
                 <div className="text-4xl font-bold text-yellow-400">{prizes.length}</div>
-                <div className="text-white/70 text-sm">Türchen geöffnet</div>
+                <div className="text-white/70 text-sm">Gewonnen</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-green-400">
@@ -127,8 +130,8 @@ export default function HistoryPage() {
                 <div className="text-white/70 text-sm">Challenges</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-red-400">{24 - prizes.length}</div>
-                <div className="text-white/70 text-sm">Noch übrig</div>
+                <div className="text-4xl font-bold text-red-400">{totalPrizes - prizes.length}</div>
+                <div className="text-white/70 text-sm">Im Pool übrig</div>
               </div>
             </div>
           </motion.div>

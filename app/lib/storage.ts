@@ -1,7 +1,10 @@
 // Storage utilities for managing redeemed prizes
+import { prizePool, Prize } from './prizes';
+
 export interface RedeemedPrize {
   day: number;
   date: string;
+  prizeId: number;
   prizeTitle: string;
   prizeDescription: string;
   prizeType: 'voucher' | 'challenge';
@@ -24,6 +27,31 @@ export function getRedeemedPrizes(): RedeemedPrize[] {
 export function isAlreadyRedeemed(day: number): boolean {
   const redeemed = getRedeemedPrizes();
   return redeemed.some((p) => p.day === day);
+}
+
+export function getRedeemedPrizeForDay(day: number): RedeemedPrize | undefined {
+  const redeemed = getRedeemedPrizes();
+  return redeemed.find((p) => p.day === day);
+}
+
+// Get all prize IDs that have been won
+export function getWonPrizeIds(): number[] {
+  const redeemed = getRedeemedPrizes();
+  return redeemed.map((p) => p.prizeId);
+}
+
+// Get available prizes (not yet won)
+export function getAvailablePrizes(): Prize[] {
+  const wonIds = getWonPrizeIds();
+  return prizePool.filter((p) => !wonIds.includes(p.id));
+}
+
+// Select a random prize from available pool
+export function selectRandomPrize(): Prize | null {
+  const available = getAvailablePrizes();
+  if (available.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * available.length);
+  return available[randomIndex];
 }
 
 export function redeemPrize(prize: RedeemedPrize): void {
@@ -76,6 +104,15 @@ export function canRedeemToday(day: number): { canRedeem: boolean; reason?: stri
     return {
       canRedeem: false,
       reason: 'Du hast heute schon am Glücksrad gedreht! 🎡',
+    };
+  }
+
+  // Check if there are prizes available
+  const available = getAvailablePrizes();
+  if (available.length === 0) {
+    return {
+      canRedeem: false,
+      reason: 'Alle Preise wurden schon gewonnen! 🎉',
     };
   }
 

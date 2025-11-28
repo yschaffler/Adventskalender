@@ -5,12 +5,15 @@ import Link from 'next/link';
 import Snowfall from './components/Snowfall';
 import { useEffect, useState } from 'react';
 import { getRedeemedPrizes } from './lib/storage';
+import { prizePool } from './lib/prizes';
 
 export default function Home() {
   const [redeemedCount, setRedeemedCount] = useState(0);
+  const [totalPrizes, setTotalPrizes] = useState(0);
 
   useEffect(() => {
     setRedeemedCount(getRedeemedPrizes().length);
+    setTotalPrizes(prizePool.length);
   }, []);
 
   return (
@@ -79,17 +82,17 @@ export default function Home() {
         >
           <h2 className="text-2xl font-bold text-white mb-4">🎅 Willkommen!</h2>
           <p className="text-white/90 mb-6 leading-relaxed">
-            Scanne jeden Tag den QR-Code aus deinem Adventskalender-Tütchen,
-            um am Glücksrad zu drehen und deinen Gewinn zu erhalten!
+            Scanne den QR-Code aus deinem Adventskalender-Tütchen,
+            um am Glücksrad zu drehen und einen zufälligen Gewinn zu erhalten!
           </p>
           <div className="flex justify-center gap-6 text-center">
             <div>
               <div className="text-3xl font-bold text-yellow-400">{redeemedCount}</div>
-              <div className="text-white/70 text-sm">Geöffnet</div>
+              <div className="text-white/70 text-sm">Gewonnen</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-400">{24 - redeemedCount}</div>
-              <div className="text-white/70 text-sm">Noch übrig</div>
+              <div className="text-3xl font-bold text-green-400">{totalPrizes - redeemedCount}</div>
+              <div className="text-white/70 text-sm">Im Pool übrig</div>
             </div>
           </div>
         </motion.div>

@@ -7,8 +7,8 @@ import Snowfall from '../../components/Snowfall';
 import WelcomeAnimation from '../../components/WelcomeAnimation';
 import SpinningWheel from '../../components/SpinningWheel';
 import PrizeReveal from '../../components/PrizeReveal';
-import { getPrizeForDay, Prize } from '../../lib/prizes';
-import { canRedeemToday, redeemPrize, isAlreadyRedeemed, getRedeemedPrizes } from '../../lib/storage';
+import { getPrizeById, Prize } from '../../lib/prizes';
+import { canRedeemToday, redeemPrize, isAlreadyRedeemed, getRedeemedPrizeForDay, selectRandomPrize } from '../../lib/storage';
 import Link from 'next/link';
 
 export default function DayPage() {
@@ -34,12 +34,12 @@ export default function DayPage() {
       return;
     }
 
-    // In demo mode, skip all checks
+    // In demo mode, skip all checks and select a random prize
     if (isDemo) {
       setCanPlay(true);
-      const dayPrize = getPrizeForDay(dayId);
-      if (dayPrize) {
-        setPrize(dayPrize);
+      const randomPrize = selectRandomPrize();
+      if (randomPrize) {
+        setPrize(randomPrize);
       }
       return;
     }
@@ -47,19 +47,13 @@ export default function DayPage() {
     // Check if already redeemed and get the prize
     if (isAlreadyRedeemed(dayId)) {
       setAlreadyRedeemed(true);
-      const redeemed = getRedeemedPrizes().find(p => p.day === dayId);
+      const redeemed = getRedeemedPrizeForDay(dayId);
       if (redeemed) {
-        const originalPrize = getPrizeForDay(dayId);
+        const originalPrize = getPrizeById(redeemed.prizeId);
         if (originalPrize) {
           setRedeemedPrize(originalPrize);
         }
       }
-    }
-
-    // Get the prize for this day
-    const dayPrize = getPrizeForDay(dayId);
-    if (dayPrize) {
-      setPrize(dayPrize);
     }
 
     // Check if can redeem
@@ -67,6 +61,14 @@ export default function DayPage() {
     setCanPlay(canRedeem);
     if (!canRedeem && reason) {
       setErrorMessage(reason);
+    }
+
+    // If can redeem, select a random prize
+    if (canRedeem) {
+      const randomPrize = selectRandomPrize();
+      if (randomPrize) {
+        setPrize(randomPrize);
+      }
     }
   }, [dayId, router, isDemo]);
 
@@ -81,6 +83,7 @@ export default function DayPage() {
         redeemPrize({
           day: dayId,
           date: new Date().toISOString(),
+          prizeId: prize.id,
           prizeTitle: prize.title,
           prizeDescription: prize.description,
           prizeType: prize.type,
