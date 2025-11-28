@@ -36,11 +36,17 @@ export function redeemPrize(prize: RedeemedPrize): void {
 }
 
 export function canRedeemToday(day: number): { canRedeem: boolean; reason?: string } {
-  // Get current date in German timezone
+  // Get current date in German timezone using Intl.DateTimeFormat
   const now = new Date();
-  const germanDate = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
-  const currentDay = germanDate.getDate();
-  const currentMonth = germanDate.getMonth() + 1; // 0-indexed
+  const formatter = new Intl.DateTimeFormat('de-DE', {
+    timeZone: 'Europe/Berlin',
+    day: 'numeric',
+    month: 'numeric',
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const currentDay = parseInt(parts.find(p => p.type === 'day')?.value || '0');
+  const currentMonth = parseInt(parts.find(p => p.type === 'month')?.value || '0');
 
   // Only allow during December
   if (currentMonth !== 12) {
