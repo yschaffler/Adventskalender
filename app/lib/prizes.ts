@@ -1,0 +1,208 @@
+// Vouchers and Challenges for each day
+export interface Prize {
+  id: number;
+  type: 'voucher' | 'challenge';
+  title: string;
+  description: string;
+  emoji: string;
+  color: string;
+}
+
+export const prizes: Prize[] = [
+  {
+    id: 1,
+    type: 'voucher',
+    title: 'Frühstück im Bett',
+    description: 'Du bekommst ein liebevoll zubereitetes Frühstück direkt ans Bett serviert! 🍳',
+    emoji: '🍳',
+    color: '#FFD700',
+  },
+  {
+    id: 2,
+    type: 'challenge',
+    title: 'Kompliment-Tag',
+    description: 'Mache heute 3 Menschen ein ehrliches Kompliment!',
+    emoji: '💝',
+    color: '#FF69B4',
+  },
+  {
+    id: 3,
+    type: 'voucher',
+    title: 'Wellness-Abend',
+    description: 'Ein entspannender Wellness-Abend mit Gesichtsmaske und Tee! 🧖‍♀️',
+    emoji: '🧖‍♀️',
+    color: '#87CEEB',
+  },
+  {
+    id: 4,
+    type: 'challenge',
+    title: 'Foto-Challenge',
+    description: 'Mache heute ein Foto von etwas, das dich glücklich macht!',
+    emoji: '📸',
+    color: '#98FB98',
+  },
+  {
+    id: 5,
+    type: 'voucher',
+    title: 'Kinoabend',
+    description: 'Gemeinsamer Filmabend mit Popcorn und Snacks! 🎬',
+    emoji: '🎬',
+    color: '#DDA0DD',
+  },
+  {
+    id: 6,
+    type: 'challenge',
+    title: 'Dankbarkeit',
+    description: 'Schreibe 5 Dinge auf, für die du heute dankbar bist!',
+    emoji: '🙏',
+    color: '#F0E68C',
+  },
+  {
+    id: 7,
+    type: 'voucher',
+    title: 'Lieblingsessen',
+    description: 'Dein absolutes Lieblingsessen wird für dich gekocht! 🍲',
+    emoji: '🍲',
+    color: '#FFA07A',
+  },
+  {
+    id: 8,
+    type: 'challenge',
+    title: 'Bewegung',
+    description: 'Mache heute einen schönen 30-minütigen Spaziergang!',
+    emoji: '🚶‍♀️',
+    color: '#90EE90',
+  },
+  {
+    id: 9,
+    type: 'voucher',
+    title: 'Kuschel-Coupon',
+    description: 'Einlösbar für eine extra lange Kuschelrunde! 🤗',
+    emoji: '🤗',
+    color: '#FFB6C1',
+  },
+  {
+    id: 10,
+    type: 'challenge',
+    title: 'Musik-Moment',
+    description: 'Höre dein Lieblingslied und tanze dazu!',
+    emoji: '🎵',
+    color: '#DEB887',
+  },
+  {
+    id: 11,
+    type: 'voucher',
+    title: 'Shopping-Begleitung',
+    description: 'Ein geduldiger Shopping-Partner für einen Nachmittag! 🛍️',
+    emoji: '🛍️',
+    color: '#E6E6FA',
+  },
+  {
+    id: 12,
+    type: 'challenge',
+    title: 'Kreativ-Zeit',
+    description: 'Bastle oder male heute etwas Schönes!',
+    emoji: '🎨',
+    color: '#FFDAB9',
+  },
+  {
+    id: 13,
+    type: 'voucher',
+    title: 'Massage',
+    description: 'Eine entspannende Schulter- und Rückenmassage! 💆‍♀️',
+    emoji: '💆‍♀️',
+    color: '#B0E0E6',
+  },
+  {
+    id: 14,
+    type: 'challenge',
+    title: 'Gute Tat',
+    description: 'Mache heute etwas Nettes für einen Nachbarn oder Fremden!',
+    emoji: '🌟',
+    color: '#FFFACD',
+  },
+  {
+    id: 15,
+    type: 'voucher',
+    title: 'Café-Besuch',
+    description: 'Gemeinsamer Besuch in deinem Lieblingscafé! ☕',
+    emoji: '☕',
+    color: '#D2B48C',
+  },
+  {
+    id: 16,
+    type: 'challenge',
+    title: 'Digital Detox',
+    description: 'Verbringe heute 2 Stunden ohne Handy!',
+    emoji: '📵',
+    color: '#C0C0C0',
+  },
+  {
+    id: 17,
+    type: 'voucher',
+    title: 'Haushalts-Frei',
+    description: 'Heute wird der komplette Haushalt für dich erledigt! 🏠',
+    emoji: '🏠',
+    color: '#98D8C8',
+  },
+  {
+    id: 18,
+    type: 'challenge',
+    title: 'Erinnerungen',
+    description: 'Schaue alte Fotoalben durch und teile eine schöne Erinnerung!',
+    emoji: '📷',
+    color: '#FFEFD5',
+  },
+  {
+    id: 19,
+    type: 'voucher',
+    title: 'Spieleabend',
+    description: 'Gesellschaftsspiel-Abend nach deiner Wahl! 🎲',
+    emoji: '🎲',
+    color: '#ADD8E6',
+  },
+  {
+    id: 20,
+    type: 'challenge',
+    title: 'Brief schreiben',
+    description: 'Schreibe einen kurzen Brief an jemanden, den du schätzt!',
+    emoji: '✉️',
+    color: '#F5DEB3',
+  },
+  {
+    id: 21,
+    type: 'voucher',
+    title: 'Wunsch-Ausflug',
+    description: 'Ein Ausflug an einen Ort deiner Wahl! 🚗',
+    emoji: '🚗',
+    color: '#E0FFFF',
+  },
+  {
+    id: 22,
+    type: 'challenge',
+    title: 'Lachen',
+    description: 'Schaue heute ein Comedy-Video und lache herzlich!',
+    emoji: '😂',
+    color: '#FFE4B5',
+  },
+  {
+    id: 23,
+    type: 'voucher',
+    title: 'Plätzchenbacken',
+    description: 'Gemeinsames Plätzchenbacken mit Weihnachtsmusik! 🍪',
+    emoji: '🍪',
+    color: '#FAEBD7',
+  },
+  {
+    id: 24,
+    type: 'voucher',
+    title: 'Weihnachts-Wunsch',
+    description: 'Ein besonderer Wunsch wird dir erfüllt! 🎄✨',
+    emoji: '🎄',
+    color: '#FFD700',
+  },
+];
+
+export function getPrizeForDay(day: number): Prize | undefined {
+  return prizes.find((p) => p.id === day);
+}
