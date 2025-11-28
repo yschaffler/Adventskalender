@@ -67,9 +67,9 @@ export default function HistoryPage() {
             className="text-4xl md:text-6xl font-bold text-white mb-4"
             style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
           >
-            📜 Deine Gewinne 📜
+            Deine geöffneten Türchen
           </h1>
-          <p className="text-white/80 text-lg">Alle gewonnenen Gutscheine & Challenges</p>
+          <p className="text-white/80 text-lg">Deine Gutscheine & Challenges</p>
         </motion.div>
 
         {/* Prizes grid */}
@@ -136,39 +136,6 @@ export default function HistoryPage() {
               </motion.div>
             ))}
           </div>
-        )}
-
-        {/* Stats */}
-        {history.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="max-w-4xl mx-auto mt-8 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
-          >
-            <div className="flex flex-wrap justify-center gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold text-yellow-400">{stats.won}</div>
-                <div className="text-white/70 text-sm">Gewonnen</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-green-400">
-                  {history.filter((e) => e.prize.type === 'voucher').length}
-                </div>
-                <div className="text-white/70 text-sm">Gutscheine</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-purple-400">
-                  {history.filter((e) => e.prize.type === 'challenge').length}
-                </div>
-                <div className="text-white/70 text-sm">Challenges</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-red-400">{stats.remaining}</div>
-                <div className="text-white/70 text-sm">Im Pool übrig</div>
-              </div>
-            </div>
-          </motion.div>
         )}
 
         {/* Navigation */}

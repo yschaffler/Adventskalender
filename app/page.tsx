@@ -93,16 +93,6 @@ export default function Home() {
             Scanne den QR-Code aus deinem Adventskalender-Tütchen,
             um am Glücksrad zu drehen und einen zufälligen Gewinn zu erhalten!
           </p>
-          <div className="flex justify-center gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-yellow-400">{stats.won}</div>
-              <div className="text-white/70 text-sm">Gewonnen</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-400">{stats.remaining}</div>
-              <div className="text-white/70 text-sm">Im Pool übrig</div>
-            </div>
-          </div>
         </motion.div>
 
         {/* Navigation buttons */}
