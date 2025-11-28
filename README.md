@@ -36,6 +36,55 @@ docker build -t adventskalender .
 docker run -d -p 3000:3000 -v advent_data:/app/data adventskalender
 ```
 
+## 🌐 Deployment mit nginx (adventskalender.yschaffler.de)
+
+### Schritt 1: Repository auf Server clonen und starten
+
+```bash
+# Auf deinem Linux Server
+cd /opt
+git clone https://github.com/yschaffler/Adventskalender.git
+cd Adventskalender
+
+# Docker Container starten
+docker compose up -d
+```
+
+### Schritt 2: SSL-Zertifikat erstellen (Let's Encrypt)
+
+```bash
+# Certbot installieren (falls noch nicht vorhanden)
+sudo apt install certbot python3-certbot-nginx
+
+# Zertifikat erstellen
+sudo certbot certonly --nginx -d adventskalender.yschaffler.de
+```
+
+### Schritt 3: nginx konfigurieren
+
+```bash
+# Konfiguration kopieren
+sudo cp nginx.conf.example /etc/nginx/sites-available/adventskalender
+
+# Domain in Konfiguration anpassen (falls nötig)
+sudo nano /etc/nginx/sites-available/adventskalender
+
+# Aktivieren
+sudo ln -s /etc/nginx/sites-available/adventskalender /etc/nginx/sites-enabled/
+
+# nginx neu laden
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Die Seite ist nun unter `https://adventskalender.yschaffler.de` erreichbar!
+
+### Schritt 4: QR-Codes erstellen
+
+Erstelle QR-Codes die zu diesen URLs verlinken:
+- Tag 1: `https://adventskalender.yschaffler.de/day/1`
+- Tag 2: `https://adventskalender.yschaffler.de/day/2`
+- usw.
+
 ## 🛠️ Lokale Entwicklung
 
 ```bash
@@ -61,6 +110,7 @@ npm run dev
 │       ├── db.ts         # SQLite Datenbank
 │       └── prizes.ts     # Prize Interface
 ├── data/                 # SQLite Datenbank (gitignored)
+├── nginx.conf.example    # nginx Beispiel-Konfiguration
 ├── Dockerfile
 └── docker-compose.yml
 ```
@@ -71,7 +121,7 @@ Die initialen Preise werden beim ersten Start in `app/lib/db.ts` definiert. Um n
 
 ```bash
 # Neuen Preis hinzufügen
-curl -X POST http://localhost:3000/api/prizes \
+curl -X POST https://adventskalender.yschaffler.de/api/prizes \
   -H "Content-Type: application/json" \
   -d '{
     "type": "voucher",
@@ -82,19 +132,19 @@ curl -X POST http://localhost:3000/api/prizes \
   }'
 
 # Alle Preise anzeigen
-curl http://localhost:3000/api/prizes
+curl https://adventskalender.yschaffler.de/api/prizes
 ```
 
 ## 📱 QR-Codes
 
 Erstelle QR-Codes für jeden Tag, die zu `/day/1`, `/day/2`, etc. verlinken.
 
-Beispiel für Tag 5: `https://deine-domain.de/day/5`
+Beispiel für Tag 5: `https://adventskalender.yschaffler.de/day/5`
 
 ## 🧪 Demo-Modus
 
 Füge `?demo=true` zur URL hinzu, um die Datums-Validierung zu umgehen:
-`http://localhost:3000/day/5?demo=true`
+`https://adventskalender.yschaffler.de/day/5?demo=true`
 
 ## 📜 API Endpunkte
 
@@ -118,4 +168,13 @@ docker cp $(docker ps -q -f ancestor=adventskalender):/app/data/advent.db ./back
 
 # Datenbank wiederherstellen
 docker cp ./backup.db $(docker ps -q -f ancestor=adventskalender):/app/data/advent.db
+```
+
+## 🔄 Updates
+
+```bash
+cd /opt/Adventskalender
+git pull
+docker compose down
+docker compose up -d --build
 ```
