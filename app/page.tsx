@@ -6,23 +6,7 @@ import Snowfall from './components/Snowfall';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [stats, setStats] = useState({ won: 0, remaining: 0, total: 0 });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/prizes');
-        const data = await response.json();
-        if (data.stats) {
-          setStats(data.stats);
-        }
-      } catch {
-        console.error('Failed to fetch stats');
-      }
-    };
-    
-    fetchStats();
-  }, []);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-green-900 relative overflow-hidden">

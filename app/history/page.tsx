@@ -20,15 +20,9 @@ interface HistoryEntry {
   };
 }
 
-interface Stats {
-  total: number;
-  won: number;
-  remaining: number;
-}
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [stats, setStats] = useState<Stats>({ total: 0, won: 0, remaining: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,9 +32,6 @@ export default function HistoryPage() {
         const data = await response.json();
         if (data.history) {
           setHistory(data.history);
-        }
-        if (data.stats) {
-          setStats(data.stats);
         }
       } catch {
         console.error('Failed to fetch history');
