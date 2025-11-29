@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Snowfall from './components/Snowfall';
-import { useEffect, useState } from 'react';
 
 export default function Home() {
   
