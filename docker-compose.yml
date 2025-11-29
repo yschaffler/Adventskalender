@@ -1,0 +1,21 @@
+services:
+  adventskalender:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist the database
+      - advent_data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/advent.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/prizes"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  advent_data:
