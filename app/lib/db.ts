@@ -40,18 +40,12 @@ if (count.count === 0) {
   `);
 
   const initialPrizes = [
-    { type: 'voucher', title: 'Frühstück im Bett', description: 'Du bekommst ein liebevoll zubereitetes Frühstück direkt ans Bett serviert! 🍳', emoji: '🍳', color: '#FFD700' },
-    { type: 'challenge', title: 'Kompliment-Tag', description: 'Mache heute 3 Menschen ein ehrliches Kompliment!', emoji: '💝', color: '#FF69B4' },
-    { type: 'voucher', title: 'Wellness-Abend', description: 'Ein entspannender Wellness-Abend mit Gesichtsmaske und Tee! 🧖‍♀️', emoji: '🧖‍♀️', color: '#87CEEB' },
-    { type: 'voucher', title: 'Kinoabend', description: 'Gemeinsamer Filmabend mit Popcorn und Snacks! 🎬', emoji: '🎬', color: '#DDA0DD' },
-    { type: 'voucher', title: 'Lieblingsessen', description: 'Dein absolutes Lieblingsessen wird für dich gekocht! 🍲', emoji: '🍲', color: '#FFA07A' },
-    { type: 'voucher', title: 'Kuschel-Coupon', description: 'Einlösbar für eine extra lange Kuschelrunde! 🤗', emoji: '🤗', color: '#FFB6C1' },
-    { type: 'voucher', title: 'Massage', description: 'Eine entspannende Schulter- und Rückenmassage! 💆‍♀️', emoji: '💆‍♀️', color: '#B0E0E6' },
-    { type: 'voucher', title: 'Café-Besuch', description: 'Gemeinsamer Besuch in deinem Lieblingscafé! ☕', emoji: '☕', color: '#D2B48C' },
-    { type: 'voucher', title: 'Haushalts-Frei', description: 'Heute wird der komplette Haushalt für dich erledigt! 🏠', emoji: '🏠', color: '#98D8C8' },
-    { type: 'voucher', title: 'Spieleabend', description: 'Gesellschaftsspiel-Abend nach deiner Wahl! 🎲', emoji: '🎲', color: '#ADD8E6' },
-    { type: 'challenge', title: 'Foto-Challenge', description: 'Mache heute ein Foto von etwas, das dich glücklich macht!', emoji: '📸', color: '#98FB98' },
-    { type: 'challenge', title: 'Dankbarkeit', description: 'Schreibe 5 Dinge auf, für die du heute dankbar bist!', emoji: '🙏', color: '#F0E68C' },
+    { type: 'voucher', title: 'Koch Yannik', description: 'Ums Abendessen kümmer ich mich mal.. 👨‍🍳', emoji: '👨‍🍳', color: '#FFD700' },
+    { type: 'challenge', title: 'Sportskanone', description: 'Tja heut machen wir auch mal was für unsere Figur - 3x1min Planks zusammen', emoji: '💪', color: '#FF69B4' },
+    { type: 'voucher', title: 'Küchenfrei', description: 'Du bist heute mal von der Kücke befreit - also wie immer ja eig! 🥴', emoji: '🥴', color: '#87CEEB' },
+    { type: 'voucher', title: 'Jackpot', description: 'Du kannst dir einmal 20 min Pause gönnen - bin natürlich dein persönlicher Diener! 🤑', emoji: '🤑', color: '#DDA0DD' },
+    { type: 'voucher', title: 'Brauchen wir noch was?', description: 'Gehe dir natürlich liebend gerne einmal Einkaufen! 😘', emoji: '😘', color: '#FFA07A' },
+    { type: 'challenge', title: 'Yogapause', description: 'Heute machen wir mal 15min yoga zusammen! 🧘', emoji: '🧘', color: '#FFB6C1' },
   ];
 
   const insertMany = db.transaction((prizes: typeof initialPrizes) => {
